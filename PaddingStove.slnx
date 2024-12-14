@@ -1,0 +1,5 @@
+﻿<Solution>
+  <Project Path="HCGStudio.PaddingStove.Core\HCGStudio.PaddingStove.Core.csproj" Type="Classic C#" />
+  <Project Path="HCGStudio.PaddingStove.Hosting\HCGStudio.PaddingStove.Hosting.csproj" Type="Classic C#" />
+  <Project Path="submodules\HearthDb\HearthDb\HearthDb.csproj" Type="Classic C#" />
+</Solution>

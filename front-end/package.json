@@ -1,0 +1,32 @@
+{
+  "name": "front-end",
+  "packageManager": "yarn@4.5.3",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel --no-cache",
+    "build": "rimraf ./dist && parcel build --no-cache"
+  },
+  "dependencies": {
+    "@griffel/react": "^1.5.27",
+    "@mantine/core": "^7.15.1",
+    "@mantine/hooks": "^7.15.1",
+    "add": "^2.0.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "swr": "^2.2.5",
+    "usehooks-ts": "^3.1.0",
+    "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "@parcel/core": "^2.13.2",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.0",
+    "@types/add": "^2",
+    "@types/react": "^18.3.16",
+    "@types/react-dom": "^18.3.5",
+    "parcel": "^2.13.2",
+    "prettier": "^3.4.2",
+    "process": "^0.11.10",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2"
+  }
+}

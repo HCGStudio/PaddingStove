@@ -1,0 +1,1 @@
+{"mappings":"ACAA","sources":["index.fc18ec45.css","src/global.css"],"sourcesContent":["#app, body, html {\n  height: 100%;\n}\n/*# sourceMappingURL=index.fc18ec45.css.map */\n","#app {\n    height: 100%;\n}\n\nbody {\n    height: 100%;\n}\n\nhtml {\n    height: 100%;\n}\n"],"names":[],"version":3,"file":"index.fc18ec45.css.map"}

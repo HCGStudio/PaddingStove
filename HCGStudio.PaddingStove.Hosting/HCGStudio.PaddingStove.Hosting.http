@@ -1,0 +1,11 @@
+@HostAddress = http://localhost:5121
+
+GET {{HostAddress}}/api/Device/
+Accept: application/json
+
+###
+
+GET {{HostAddress}}/api/Tracker/114514
+Accept: text/event-stream
+
+###
