@@ -1,4 +1,3 @@
-using System.Text;
 using HCGStudio.PaddingStove.Core.Native;
 
 namespace HCGStudio.PaddingStove.Core;

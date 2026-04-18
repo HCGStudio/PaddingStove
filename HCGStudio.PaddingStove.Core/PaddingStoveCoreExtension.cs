@@ -12,6 +12,7 @@ public static class PaddingStoveCoreExtension
         
         services.AddSingleton<IDeviceProvider, DeviceProvider>();
         services.AddSingleton<IGameBoardFactory, GameBoardFactory>();
+        services.AddSingleton<ILogConfigInstaller, LogConfigInstaller>();
         return services;
     }
 }

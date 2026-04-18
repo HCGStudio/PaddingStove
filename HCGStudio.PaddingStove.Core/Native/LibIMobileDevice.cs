@@ -49,6 +49,18 @@ internal static partial class LibIMobileDevice
             throw new MobileDeviceException<External.LockdownServiceErrorStatus>(status);
     }
 
+    internal static void ThrowIfError(External.HouseArrestErrorStatus status)
+    {
+        if (status != External.HouseArrestErrorStatus.Success)
+            throw new MobileDeviceException<External.HouseArrestErrorStatus>(status);
+    }
+
+    internal static void ThrowIfError(External.AfcErrorStatus status)
+    {
+        if (status != External.AfcErrorStatus.Success)
+            throw new MobileDeviceException<External.AfcErrorStatus>(status);
+    }
+
     [LibraryImport("libimobiledevice-1.0", EntryPoint = "idevice_get_device_list_extended")]
     private static unsafe partial External.DeviceErrorStatus GetDeviceList(
         out External.DeviceInfo** devices,

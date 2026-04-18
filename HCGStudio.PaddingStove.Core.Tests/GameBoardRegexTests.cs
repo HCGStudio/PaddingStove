@@ -1,4 +1,3 @@
-using HCGStudio.PaddingStove.Core;
 using Xunit;
 
 namespace HCGStudio.PaddingStove.Core.Tests;
@@ -10,14 +9,14 @@ public class GameBoardRegexTests
     {
         const string line =
             "Mar 15 12:00:00 hearthstone[123] <Notice>: D 12:00:00.000 [Power] GameState.DebugPrintPower() -     CREATE_GAME";
-        Assert.True(GameBoard.GameStartRegex().IsMatch(line));
+        Assert.Matches(GameBoard.GameStartRegex(), line);
     }
 
     [Fact]
     public void GameStartRegex_DoesNotMatchUnrelated()
     {
         const string line = "Mar 15 12:00:00 hearthstone[123] <Notice>: nothing here";
-        Assert.False(GameBoard.GameStartRegex().IsMatch(line));
+        Assert.DoesNotMatch(GameBoard.GameStartRegex(), line);
     }
 
     [Theory]
@@ -37,7 +36,7 @@ public class GameBoardRegexTests
     {
         const string line =
             "hearthstone [Power] GameState.DebugPrintPower() - TAG_CHANGE Entity=Player1 tag=PLAYSTATE value=PLAYING";
-        Assert.False(GameBoard.GameEndRegex().IsMatch(line));
+        Assert.DoesNotMatch(GameBoard.GameEndRegex(), line);
     }
 
     [Fact]
@@ -84,6 +83,6 @@ public class GameBoardRegexTests
     {
         const string line =
             "hearthstone [Zone] ZoneChangeList.ProcessChanges() - id=3 local=False [entityName=GameEntity id=1 zone=PLAY zonePos=0 cardId= player=0] zone from  -> ";
-        Assert.True(GameBoard.ZoneChangeRegex().IsMatch(line));
+        Assert.Matches(GameBoard.ZoneChangeRegex(), line);
     }
 }

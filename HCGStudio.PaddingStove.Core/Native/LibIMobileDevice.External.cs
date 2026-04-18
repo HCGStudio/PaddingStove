@@ -94,3 +94,45 @@ internal enum LockdownServiceErrorStatus
     Timeout = -7,
     UnknownError = -256
 }
+
+internal enum HouseArrestErrorStatus
+{
+    Success = 0,
+    InvalidArgument = -1,
+    PlistError = -2,
+    ConnectionFailed = -3,
+    InvalidMode = -4,
+    UnknownError = -256
+}
+
+internal enum AfcErrorStatus
+{
+    Success = 0,
+    UnknownError = 1,
+    OperationHeaderInvalid = 2,
+    NoResources = 3,
+    ReadError = 4,
+    WriteError = 5,
+    UnknownPacketType = 6,
+    InvalidArgument = 7,
+    ObjectNotFound = 8,
+    ObjectIsDirectory = 9,
+    PermissionDenied = 10,
+    ServiceNotConnected = 11,
+    OperationTimeout = 12,
+    TooMuchData = 13,
+    EndOfData = 14,
+    OperationNotSupported = 15,
+    ObjectExists = 16,
+    ObjectBusy = 17,
+    NoSpaceLeft = 18,
+    OperationWouldBlock = 19,
+    IoError = 20,
+    OperationInterrupted = 21,
+    OperationInProgress = 22,
+    InternalError = 23,
+    MuxError = 30,
+    NoMemory = 31,
+    NotEnoughData = 32,
+    DirectoryNotEmpty = 33
+}

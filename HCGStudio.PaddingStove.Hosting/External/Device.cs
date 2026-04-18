@@ -12,3 +12,5 @@ public enum DeviceType
 }
 
 public readonly record struct DeviceInfo(string Id, bool CanConnect, string? DeviceName, DeviceType DeviceType);
+
+public readonly record struct InstallLogConfigResult(bool Success, string? Error);

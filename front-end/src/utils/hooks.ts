@@ -48,6 +48,16 @@ const mapCardDbInfo = (data: ICardDbInfo[]) => {
 
 export const useDevices = () => useSWR<IDeviceInfo[]>("/api/device", fetcher);
 
+export interface IInstallLogConfigResult {
+  success: boolean;
+  error?: string;
+}
+
+export const installLogConfig = (deviceId: string) =>
+  fetch(`/api/device/${encodeURIComponent(deviceId)}/install-log-config`, {
+    method: "POST",
+  }).then((r) => r.json() as Promise<IInstallLogConfigResult>);
+
 export const useCards = (version: string) =>
   useSWR<Record<string, ICardDbInfo>>(
     `https://api.hearthstonejson.com/v1/${version}/zhCN/cards.json`,

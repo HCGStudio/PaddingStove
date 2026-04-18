@@ -43,7 +43,7 @@ dotnet test --filter "FullyQualifiedName~GameBoardRegexTests"   # single class
 
 Native dependency: `libimobiledevice` must be installed on the host (`brew install libimobiledevice` on macOS). Windows is WIP.
 
-The iPad must have `utils/log.config` placed in the Hearthstone app's root via Finder/iTunes, and Wi-Fi sync enabled, so the host can reach it wirelessly.
+The iPad must have `utils/log.config` placed in the Hearthstone app's Documents directory. The host can push this automatically via `POST /api/Device/{id}/install-log-config` (used by the **Install log.config on Hearthstone** action in the device picker), which opens `com.apple.mobile.house_arrest`, sends `VendDocuments` for `unity.Blizzard Entertainment.Hearthstone`, and writes the embedded `log.config` over AFC. Wi-Fi sync must also be enabled so the host can reach the iPad wirelessly after unplugging.
 
 ## Architecture
 

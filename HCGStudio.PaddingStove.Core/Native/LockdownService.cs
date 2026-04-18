@@ -12,6 +12,12 @@ internal readonly partial struct LockdownService(nint device, nint service) : ID
         return new(client);
     }
 
+    public HouseArrestClient CreateHouseArrestClient()
+    {
+        LibIMobileDevice.ThrowIfError(NewHouseArrestClient(device, service, out var client));
+        return new(client);
+    }
+
     public void Dispose()
     {
         FreeLockdownService(service);
@@ -19,6 +25,12 @@ internal readonly partial struct LockdownService(nint device, nint service) : ID
 
     [LibraryImport("libimobiledevice-1.0", EntryPoint = "service_client_new")]
     private static unsafe partial External.LockdownErrorStatus NewLockdownServiceClient(
+        nint device,
+        nint service,
+        out nint client);
+
+    [LibraryImport("libimobiledevice-1.0", EntryPoint = "house_arrest_client_new")]
+    private static unsafe partial External.HouseArrestErrorStatus NewHouseArrestClient(
         nint device,
         nint service,
         out nint client);

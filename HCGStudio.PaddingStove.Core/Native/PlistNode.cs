@@ -20,6 +20,14 @@ internal readonly partial struct PlistNode(nint node) : IDisposable
         }
     }
 
+    public string? GetDictStringItem(string key)
+    {
+        var item = PlistDictGetItem(node, key);
+        if (item == 0) return null;
+        PlistGetStringVal(item, out var value);
+        return value;
+    }
+
     [LibraryImport("libplist-2.0", EntryPoint = "plist_free")]
     private static unsafe partial void PlistFree(nint node);
 
@@ -28,4 +36,10 @@ internal readonly partial struct PlistNode(nint node) : IDisposable
         EntryPoint = "plist_get_string_val",
         StringMarshalling = StringMarshalling.Utf8)]
     private static unsafe partial void PlistGetStringVal(nint node, out string value);
+
+    [LibraryImport(
+        "libplist-2.0",
+        EntryPoint = "plist_dict_get_item",
+        StringMarshalling = StringMarshalling.Utf8)]
+    private static unsafe partial nint PlistDictGetItem(nint node, string key);
 }

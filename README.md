@@ -59,8 +59,8 @@ WIP. You currently need to compile `libimobiledevice` yourself or use a third-pa
 
 ### Prepare the iPad
 
-1. Connect your iPad to the host with a cable.
-2. Copy [`utils/log.config`](./utils/log.config) into the Hearthstone app's root folder using Finder, [Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k), or iTunes.
+1. Connect your iPad to the host with a cable and pair it (so `idevicepair` trusts the device).
+2. Start the host (see [Run](#run)) and open it on the iPad. From the device picker, click **Install log.config on Hearthstone** under your iPad — PaddingStove pushes [`utils/log.config`](./utils/log.config) into the Hearthstone app's Documents over `house_arrest`. (Or copy it manually with Finder / Apple Devices / iTunes if you'd rather.)
 3. Enable **Show this iPad when on Wi-Fi** (Finder) or **Sync with this iPad over Wi-Fi** (iTunes).
 4. Unplug the cable. The iPad should still appear to the host while on the same Wi-Fi.
 
