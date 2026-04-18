@@ -1,5 +1,4 @@
-import { makeStyles, mergeClasses } from "@griffel/react";
-import { Text } from "@mantine/core";
+import clsx from "clsx";
 
 export interface ICardTileDisplayProps {
   id: string;
@@ -9,95 +8,20 @@ export interface ICardTileDisplayProps {
   count: number;
 }
 
-const useStyles = makeStyles({
-  wrapper: {
-    display: "flex",
-    overflow: "hidden",
-    position: "relative",
-    width: "100%",
-    backgroundColor: "gray",
-    border: "1px solid black",
-    fontWeight: "bold",
-  },
-  gem: {
-    fontSize: "1.3em",
-    flex: "0 0 auto",
-    height: "34px",
-    width: "34px",
-    lineHeight: "34px",
-    textAlign: "center",
-    float: "left",
-    position: "relative",
-    borderRight: "solid 1px black",
-    color: "white",
-    textShadow:
-      "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
-  },
-  COMMON: {
-    backgroundColor: "#858585",
-  },
-  RARE: {
-    backgroundColor: "#315376",
-  },
-  EPIC: {
-    backgroundColor: "#644C82",
-  },
-  LEGENDARY: {
-    backgroundColor: "#855C25",
-  },
-  tile: {
-    textAlign: "left",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    padding: "0px 6px",
-    flex: "1 0 0px",
-    overflow: "hidden",
-    backgroundColor: "#313131",
-    backgroundPosition: "right center",
-    backgroundSize: "contain",
-    backgroundRepeat: "no-repeat",
-  },
-  count: {
-    flex: "0 0 auto",
-    fontSize: "1.1em",
-    color: "gold",
-    textAlign: "center",
-    lineHeight: "34px",
-    width: "24px",
-    backgroundColor: "#313131",
-    borderLeft: "solid 1px black",
-  },
-  tileText: {
-    fontSize: "0.8em",
-    height: "34px",
-    lineHeight: "34px",
-    color: "white",
-    fontWeight: "bold",
-    textShadow:
-      "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
-  },
-  greyOutOverlay: {
-    position: "absolute",
-    top: "0",
-    left: "0",
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.65)",
-    zIndex: 100,
-  },
-  overlayHide: {
-    display: "none",
-  },
-});
+const rarityClass: Record<ICardTileDisplayProps["rarity"], string> = {
+  COMMON: "bg-[#858585]",
+  RARE: "bg-[#315376]",
+  EPIC: "bg-[#644C82]",
+  LEGENDARY: "bg-[#855C25]",
+};
 
-const getBackGroundImage = (id: string) =>
-  `linear-gradient(
-  65deg,
-  rgb(49, 49, 30),
-  rgb(49, 49, 49) calc(100% - 110px),
-  rgba(49, 49, 49, 0) calc(100% - 46px),
-  rgba(49, 49, 49, 0)),
-  url("https://art.hearthstonejson.com/v1/tiles/${id}.png")`;
+const tileTextShadow = {
+  textShadow:
+    "rgb(0,0,0) -1px -1px 0px, rgb(0,0,0) 1px -1px 0px, rgb(0,0,0) -1px 1px 0px, rgb(0,0,0) 1px 1px 0px",
+};
+
+const getBackgroundImage = (id: string) =>
+  `linear-gradient(65deg, rgb(49,49,30), rgb(49,49,49) calc(100% - 110px), rgba(49,49,49,0) calc(100% - 46px), rgba(49,49,49,0)), url("https://art.hearthstonejson.com/v1/tiles/${id}.png")`;
 
 export const CardTileDisplay = ({
   id,
@@ -105,28 +29,43 @@ export const CardTileDisplay = ({
   name,
   rarity,
   count,
-}: ICardTileDisplayProps) => {
-  const styles = useStyles();
-  return (
-    <div className={styles.wrapper}>
-      <div className={mergeClasses(styles.gem, styles[rarity])}>{cost}</div>
-      <div
-        className={styles.tile}
-        style={{ backgroundImage: getBackGroundImage(id) }}
-      >
-        <Text className={styles.tileText}>{name}</Text>
-        <div
-          className={mergeClasses(
-            styles.greyOutOverlay,
-            count > 0 ? styles.overlayHide : undefined,
-          )}
-        />
-      </div>
-      {count > 1 ? (
-        <div className={styles.count}>{count}</div>
-      ) : rarity === "LEGENDARY" ? (
-        <div className={styles.count}>★</div>
-      ) : null}
+}: ICardTileDisplayProps) => (
+  <div className="relative flex w-full overflow-hidden rounded-lg bg-dark-surface font-sans font-medium shadow-ring-deep">
+    <div
+      className={clsx(
+        "relative h-[34px] w-[34px] flex-none border-r border-black/80 text-center text-[1.3em] leading-[34px] text-white",
+        rarityClass[rarity],
+      )}
+      style={tileTextShadow}
+    >
+      {cost}
     </div>
-  );
-};
+    <div
+      className="relative flex-1 overflow-hidden bg-no-repeat px-1.5 text-left"
+      style={{
+        backgroundImage: getBackgroundImage(id),
+        backgroundPosition: "right center",
+        backgroundSize: "contain",
+      }}
+    >
+      <span
+        className="block h-[34px] truncate text-[0.8em] font-medium leading-[34px] text-white"
+        style={tileTextShadow}
+      >
+        {name}
+      </span>
+      {count <= 0 && (
+        <div className="pointer-events-none absolute inset-0 z-[100] bg-black/65" />
+      )}
+    </div>
+    {count > 1 ? (
+      <div className="w-6 flex-none border-l border-dark-surface bg-near-black text-center text-[1.1em] leading-[34px] text-coral">
+        {count}
+      </div>
+    ) : rarity === "LEGENDARY" ? (
+      <div className="w-6 flex-none border-l border-dark-surface bg-near-black text-center text-[1.1em] leading-[34px] text-coral">
+        ★
+      </div>
+    ) : null}
+  </div>
+);

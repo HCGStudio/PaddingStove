@@ -1,35 +1,12 @@
-import { makeStyles } from "@griffel/react";
-import { Button, Text } from "@mantine/core";
+import clsx from "clsx";
 import React, { useEffect } from "react";
+import { Separator } from "radix-ui";
 
 import { DeckDisplay } from "./components/DeckDisplay";
 import { BoardUpdateEvent, SseEvent } from "./types/SseEvent";
 import { useDevices } from "./utils/hooks";
 
-const useStyles = makeStyles({
-  wrapper: {
-    display: "flex",
-    flexDirection: "column",
-    rowGap: "10px",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    "> button": {
-      width: " 80%",
-    },
-  },
-  boards: {
-    display: "flex",
-    flexDirection: "row",
-    height: "100%",
-    width: "100%",
-    columnGap: "10px",
-  },
-});
-
 export const App = () => {
-  const styles = useStyles();
-
   const [deviceId, setDeviceId] = React.useState<string>("");
   const [board, setBoard] = React.useState<BoardUpdateEvent | undefined>();
 
@@ -48,30 +25,136 @@ export const App = () => {
     }
   }, [deviceId]);
 
-  return deviceId ? (
-    board && board.state === "running" ? (
-      <div className={styles.boards}>
-        <DeckDisplay title="You" cards={board.playerDeck} />
-        <DeckDisplay title="Opponent" cards={board.opponentDeck} />
+  if (deviceId && board && board.state === "running") {
+    return (
+      <div className="flex min-h-full flex-col bg-parchment text-near-black">
+        <div className="flex w-full flex-1 flex-row gap-4 p-5">
+          <DeckDisplay title="You" cards={board.playerDeck} />
+          <DeckDisplay title="Opponent" cards={board.opponentDeck} />
+        </div>
       </div>
-    ) : (
-      <div className={styles.wrapper}>
-        <Text size="xl">Waiting for Game Start</Text>
-      </div>
-    )
-  ) : (
-    <div className={styles.wrapper}>
-      <Text size="xl">Choose Your Device</Text>
-      {devices?.map((d) => (
-        <Button
-          key={d.id}
-          variant="filled"
-          disabled={d.deviceType !== "iPad"}
-          onClick={() => setDeviceId(d.id)}
-        >
-          {d.deviceName ?? d.id}({d.deviceType})
-        </Button>
-      )) ?? <Text>No Devices</Text>}
-    </div>
+    );
+  }
+
+  if (deviceId) {
+    return (
+      <Shell>
+        <Card>
+          <Eyebrow>PaddingStove</Eyebrow>
+          <h1 className="font-serif text-[36px] font-medium leading-tight text-near-black">
+            <span className="mr-2 inline-block h-2 w-2 rounded-full bg-terracotta align-middle animate-pulse-dot" />
+            Waiting for game start
+          </h1>
+          <p className="font-sans text-[17px] leading-relaxed text-olive-gray">
+            Listening to your iPad. Open Hearthstone and begin a match — the
+            tracker will appear here as soon as the first card is drawn.
+          </p>
+        </Card>
+      </Shell>
+    );
+  }
+
+  return (
+    <Shell>
+      <Card>
+        <Eyebrow>PaddingStove</Eyebrow>
+        <h1 className="font-serif text-[36px] font-medium leading-tight text-near-black">
+          Choose your device
+        </h1>
+        <p className="font-sans text-[17px] leading-relaxed text-olive-gray">
+          Select an iPad from the list below to begin tracking your Hearthstone
+          matches.
+        </p>
+        <Separator.Root className="h-px w-full bg-border-cream" />
+        {devices === undefined ? (
+          <EmptyState>Looking for devices…</EmptyState>
+        ) : devices.length === 0 ? (
+          <EmptyState>
+            No devices detected. Connect an iPad over Wi-Fi sync and refresh.
+          </EmptyState>
+        ) : (
+          <div className="flex flex-col gap-2.5">
+            {devices.map((d, idx) => {
+              const isIpad = d.deviceType === "iPad";
+              const isPrimary = isIpad && idx === 0;
+              return (
+                <DeviceButton
+                  key={d.id}
+                  primary={isPrimary}
+                  disabled={!isIpad}
+                  onClick={() => setDeviceId(d.id)}
+                >
+                  <span className="font-sans text-[16px] font-medium">
+                    {d.deviceName ?? d.id}
+                  </span>
+                  <span
+                    className={clsx(
+                      "font-sans text-[12px] tracking-[0.12px]",
+                      isPrimary ? "text-parchment/85" : "text-stone-gray",
+                    )}
+                  >
+                    {d.deviceType}
+                    {!isIpad ? " · unsupported" : ""}
+                  </span>
+                </DeviceButton>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+    </Shell>
   );
 };
+
+const Shell = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex min-h-full flex-col bg-parchment text-near-black">
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
+      {children}
+    </div>
+  </div>
+);
+
+const Card = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex w-full max-w-[520px] flex-col gap-5 rounded-2xl border border-border-cream bg-ivory p-8 shadow-whisper">
+    {children}
+  </div>
+);
+
+const Eyebrow = ({ children }: { children: React.ReactNode }) => (
+  <div className="-mb-1 font-sans text-[10px] uppercase tracking-[0.5px] text-stone-gray">
+    {children}
+  </div>
+);
+
+const EmptyState = ({ children }: { children: React.ReactNode }) => (
+  <div className="px-2 py-3 text-center font-sans text-[15px] text-stone-gray">
+    {children}
+  </div>
+);
+
+interface DeviceButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  primary?: boolean;
+}
+
+const DeviceButton = ({
+  primary,
+  className,
+  children,
+  ...rest
+}: DeviceButtonProps) => (
+  <button
+    type="button"
+    className={clsx(
+      "flex w-full cursor-pointer flex-col items-start gap-0.5 rounded-xl border-0 px-4 py-3.5 text-left font-sans text-[16px] font-medium transition-shadow duration-150",
+      primary
+        ? "bg-terracotta text-ivory shadow-ring-terracotta hover:bg-coral"
+        : "bg-sand text-charcoal-warm shadow-ring-warm hover:shadow-ring-deep",
+      "disabled:cursor-not-allowed disabled:opacity-55",
+      className,
+    )}
+    {...rest}
+  >
+    {children}
+  </button>
+);
