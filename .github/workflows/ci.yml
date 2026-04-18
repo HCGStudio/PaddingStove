@@ -47,3 +47,21 @@ jobs:
         env:
           SkipFrontEndBuild: 'true'
         run: dotnet test HCGStudio.PaddingStove.Core.Tests/HCGStudio.PaddingStove.Core.Tests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Stage front-end into wwwroot
+        run: |
+          mkdir -p HCGStudio.PaddingStove.Hosting/wwwroot
+          cp -R front-end/dist/. HCGStudio.PaddingStove.Hosting/wwwroot/
+
+      - name: Publish Hosting (framework-dependent)
+        env:
+          SkipFrontEndBuild: 'true'
+        run: dotnet publish HCGStudio.PaddingStove.Hosting/HCGStudio.PaddingStove.Hosting.csproj --configuration Release --no-build --output publish
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: paddingstove-${{ github.sha }}
+          path: publish/
+          if-no-files-found: error
+          retention-days: 14
