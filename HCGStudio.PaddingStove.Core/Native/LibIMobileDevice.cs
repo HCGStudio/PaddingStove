@@ -14,15 +14,21 @@ internal static partial class LibIMobileDevice
     {
         ThrowIfError(GetDeviceList(out var deviceList, out var count));
 
-        var result = new MobileDeviceInfo[count];
-
-        for (var i = 0; i < count; i++)
+        try
         {
-            result[i] = ToInternal(deviceList[i]);
-        }
+            var result = new MobileDeviceInfo[count];
 
-        // TODO: Release unmanaged memory
-        return result;
+            for (var i = 0; i < count; i++)
+            {
+                result[i] = ToInternal(deviceList[i]);
+            }
+
+            return result;
+        }
+        finally
+        {
+            FreeDeviceList(deviceList);
+        }
     }
     
     internal static void ThrowIfError(External.DeviceErrorStatus status)
@@ -47,6 +53,10 @@ internal static partial class LibIMobileDevice
     private static unsafe partial External.DeviceErrorStatus GetDeviceList(
         out External.DeviceInfo** devices,
         out int count);
+
+    [LibraryImport("libimobiledevice-1.0", EntryPoint = "idevice_device_list_extended_free")]
+    private static unsafe partial External.DeviceErrorStatus FreeDeviceList(
+        External.DeviceInfo** devices);
     
     private static DeviceConnectionType ToInternal(External.DeviceConnectionType type) =>
         (DeviceConnectionType)type;

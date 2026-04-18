@@ -16,7 +16,7 @@ internal sealed partial class GameBoard : IGameBoard
     private readonly Dictionary<string, int> PlayerDeck = new();
     private readonly Dictionary<string, int> OpponentDeck = new();
 
-    private static readonly GameBoardStatus IdleStatus = new(GameState.Idle, [], [], []);
+    private static readonly GameBoardStatus IdleStatus = new(GameState.Idle, [], []);
 
     private string NextDeckString = string.Empty;
 
@@ -84,12 +84,12 @@ internal sealed partial class GameBoard : IGameBoard
                         var playerDeck = PlayerDeck
                             .Select(kv => new DeckContent(kv.Key, kv.Value))
                             .ToArray();
-                        UpdateAndChangeStatus(new(GameState.Running, playerDeck, [], []));
+                        UpdateAndChangeStatus(new(GameState.Running, playerDeck, []));
                     }
                     catch (Exception)
                     {
                         // Deck can't be deserialized, falling back to no deck mode.
-                        UpdateAndChangeStatus(new(GameState.Running, [], [], []));
+                        UpdateAndChangeStatus(new(GameState.Running, [], []));
                     }
 
                     break;
@@ -175,8 +175,7 @@ internal sealed partial class GameBoard : IGameBoard
         UpdateAndChangeStatus(new(
             GameState.Running,
             PlayerDeck.Select(kv => new DeckContent(kv.Key, kv.Value)).ToArray(),
-            OpponentDeck.Select(kv => new DeckContent(kv.Key, kv.Value)).ToArray(),
-            []));
+            OpponentDeck.Select(kv => new DeckContent(kv.Key, kv.Value)).ToArray()));
     }
     
     private static Team ToTeam(string team) =>
@@ -201,17 +200,17 @@ internal sealed partial class GameBoard : IGameBoard
 
     [GeneratedRegex(
         @"\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=\d* local=.* \[entityName=(.*) id=(\d*) zone=.* zonePos=\d* cardId=(.*) player=(\d)\] zone from ?(FRIENDLY|OPPOSING)? ?(.*)? -> ?(FRIENDLY|OPPOSING)? ?(.*)?")]
-    private static partial Regex ZoneChangeRegex();
+    internal static partial Regex ZoneChangeRegex();
 
     [GeneratedRegex(@"\[Decks\] ([A-Za-z0-9+/]+=*)")]
-    private static partial Regex DeckStartRegex();
+    internal static partial Regex DeckStartRegex();
 
     [GeneratedRegex(@"\[Power\] GameState\.DebugPrintPower\(\) -\s+CREATE_GAME")]
-    private static partial Regex GameStartRegex();
+    internal static partial Regex GameStartRegex();
 
     [GeneratedRegex(
         @"\[Power\] GameState\.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=PLAYSTATE value=(WON|TIED)")]
-    private static partial Regex GameEndRegex();
+    internal static partial Regex GameEndRegex();
 
     private readonly record struct CardStore(Card Card, int Count);
 

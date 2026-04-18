@@ -1,88 +1,105 @@
 # PaddingStove
 
-The world first deck tracker for Hearthstone for iPad.
+The world's first deck tracker for Hearthstone on iPad.
+
+[![CI](https://github.com/HCGStudio/PaddingStove/actions/workflows/ci.yml/badge.svg)](https://github.com/HCGStudio/PaddingStove/actions/workflows/ci.yml)
+
+## How it works
+
+iOS sandboxing prevents an iPad app from reading another app's logs, so PaddingStove offloads log reading to a desktop host on the same Wi-Fi:
+
+```mermaid
+sequenceDiagram
+    iPad->>Host: Hearthstone log (via libimobiledevice syslog_relay)
+    Host->>Host: Parse zone changes / deck / game state
+    Host->>iPad: Tracker overlay (web page) + SSE updates
+```
+
+The host (.NET 9 + ASP.NET Core) reads the iPad's syslog over the network, parses Hearthstone's `Power.log` and `Zone.log` lines, and serves a React tracker UI back to the iPad's browser. Updates stream in via Server-Sent Events.
 
 ## Limitations
 
-- A running computer in the same Wi-Fi as iPad is required.
-- Tracker overlay is a web page and you have to operate and resize it on your own.
+- A computer on the same Wi-Fi as the iPad must be running the host.
+- The tracker is a web page in iPad Safari — you operate, position and resize it yourself.
 
 ## Getting started
 
->  [!WARNING]
->
->  **This is the very early version of the tracker. The steps are compliacted and to be improved.**
+> [!WARNING]
+> This is an early version. The setup is somewhat manual; see the open issues for planned automation.
 
-### For all system
+### Prerequisites (all platforms)
 
-Install latest [.Net SDK](https://dotnet.microsoft.com/en-us/download)
+Install the latest [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download).
 
-### macOS
+If you plan to modify the front-end, install [Node.js](https://nodejs.org/) (20+) and enable Yarn via Corepack:
 
-You can install required dependencies with homebrew.
+```shell
+corepack enable
+```
 
-``` shell 
+### Install libimobiledevice
+
+#### macOS
+
+```shell
 brew install libimobiledevice
 ```
 
-### Windows
+#### Arch Linux (unverified)
 
-WIP. You may have to compile `libimobiledevice` by yourself.
-
-### Arch Linux (Unverified)
-
-``` shell
+```shell
 sudo pacman -Syu libimobiledevice
 ```
 
-The libiray for macOS and Windows will be bundled in future and you won't need to install them by yourself.
+#### Windows
 
-## Device parperation
+WIP. You currently need to compile `libimobiledevice` yourself or use a third-party Windows port. Native bundling is tracked as an open task.
 
-1. Connect your iPad to your machine with wire.
-2. Transfer [log.config](./utils/log.config) to you iPad, the root folder of your Hearthstone app with Finder/[Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k)/[iTunes](https://www.apple.com/itunes/).
-3. Enable `Show this iPad when on Wi-Fi` (Finder) or `Sync with this iPad over Wi-Fi` (iTunes).
-4. Unplug wire.
+> Native libraries for macOS and Windows will be bundled in a future release so you don't have to install them by hand.
+
+### Prepare the iPad
+
+1. Connect your iPad to the host with a cable.
+2. Copy [`utils/log.config`](./utils/log.config) into the Hearthstone app's root folder using Finder, [Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k), or iTunes.
+3. Enable **Show this iPad when on Wi-Fi** (Finder) or **Sync with this iPad over Wi-Fi** (iTunes).
+4. Unplug the cable. The iPad should still appear to the host while on the same Wi-Fi.
 
 ## Run
 
-The running process is pretty simple and straightforward, just run
-
-``` shell
+```shell
 dotnet run --project HCGStudio.PaddingStove.Hosting -- --urls http://0.0.0.0:8080
 ```
 
-And view `http://[your-local-ip-or-hostname]:8080` on your iPad.
+Then open `http://<host-ip-or-hostname>:8080` on the iPad. The host's MSBuild target will build the front-end (via `yarn`) and copy it into `wwwroot/` automatically. Pass `-p:SkipFrontEndBuild=true` to skip that step if you don't have Node installed.
 
-------
+## Develop
 
-To debug with UI change, go to directory `front-end` and run
+Backend in dev mode (enables OpenAPI at `/openapi` and CORS for local front-end dev):
 
-``` shell
-yarn install
-yarn start
-```
-
-And the backend project should be started with the default port.
-
-``` shell
+```shell
 dotnet run --project HCGStudio.PaddingStove.Hosting
 ```
 
-> [!NOTE]
->
-> You should have Node.js installed if you have any changes to UX.
+Front-end (Parcel dev server, talks to the backend on its default port):
 
-## How does this works
-
-Due to Apple limitations, App can't read logs from any other Apps without a jailbreak. Deck trackers rely on log reading to work. However, reading iPad logs with computer is simple. We can read Hearthstone longs with computer, process and transfer result back to your iPad.
-
-```mermaid
----
-title: Data flow
----
-sequenceDiagram
-	iPad->>Host: Hearthstone log
-	Host->>iPad: Parsed deck
-
+```shell
+cd front-end
+yarn install
+yarn start    # dev server
+yarn build    # production build into dist/
 ```
+
+Run the test suite:
+
+```shell
+dotnet test
+```
+
+## Architecture
+
+- **`HCGStudio.PaddingStove.Core`** — domain logic. Parses Hearthstone log lines into `IBoardChange` events, mutates per-device deck state, exposes `GameBoardStatus` snapshots. No ASP.NET dependency.
+- **`HCGStudio.PaddingStove.Hosting`** — ASP.NET Core API + static-file host. Serves the built front-end out of `wwwroot/` with SPA fallback to `index.html`. Streams board updates over SSE at `/api/Tracker/{deviceId}`.
+- **`front-end`** — React 18 + Mantine + SWR, bundled with Parcel. Connects to the SSE endpoint and renders the deck tracker.
+- **`HCGStudio.PaddingStove.Core.Tests`** — xUnit tests for the log parser regexes.
+
+The `submodules/HearthDb` git submodule is required (`git submodule update --init --recursive`).

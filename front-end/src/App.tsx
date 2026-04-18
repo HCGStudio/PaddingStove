@@ -2,7 +2,7 @@ import { makeStyles } from "@griffel/react";
 import { Button, Text } from "@mantine/core";
 import React, { useEffect } from "react";
 
-import { DeckDisplay } from "./compoments/DeckDisplay";
+import { DeckDisplay } from "./components/DeckDisplay";
 import { BoardUpdateEvent, SseEvent } from "./types/SseEvent";
 import { useDevices } from "./utils/hooks";
 
@@ -18,6 +18,13 @@ const useStyles = makeStyles({
       width: " 80%",
     },
   },
+  boards: {
+    display: "flex",
+    flexDirection: "row",
+    height: "100%",
+    width: "100%",
+    columnGap: "10px",
+  },
 });
 
 export const App = () => {
@@ -32,20 +39,21 @@ export const App = () => {
     if (deviceId) {
       const eventSource = new EventSource(`/api/tracker/${deviceId}`);
       eventSource.onmessage = (e: MessageEvent<string>) => {
-        console.log(e.data);
         const data = JSON.parse(e.data) as SseEvent;
         if (data.$type === "boardUpdate") {
           setBoard(data);
         }
       };
+      return () => eventSource.close();
     }
   }, [deviceId]);
 
-  console.log(board, 111);
-
   return deviceId ? (
     board && board.state === "running" ? (
-      <DeckDisplay cards={board.playerDeck} />
+      <div className={styles.boards}>
+        <DeckDisplay title="You" cards={board.playerDeck} />
+        <DeckDisplay title="Opponent" cards={board.opponentDeck} />
+      </div>
     ) : (
       <div className={styles.wrapper}>
         <Text size="xl">Waiting for Game Start</Text>

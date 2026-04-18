@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6"/>
         <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
     </ItemGroup>
 
@@ -18,5 +18,33 @@
     <ItemGroup>
       <Folder Include="wwwroot\" />
     </ItemGroup>
+
+    <PropertyGroup>
+      <FrontEndDir>$(MSBuildThisFileDirectory)..\front-end</FrontEndDir>
+      <FrontEndDist>$(FrontEndDir)\dist</FrontEndDist>
+      <WwwRootDir>$(MSBuildThisFileDirectory)wwwroot</WwwRootDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <FrontEndSources Include="$(FrontEndDir)\src\**\*" />
+      <FrontEndSources Include="$(FrontEndDir)\package.json" />
+      <FrontEndSources Include="$(FrontEndDir)\yarn.lock" />
+    </ItemGroup>
+
+    <Target Name="BuildFrontEnd"
+            BeforeTargets="BeforeBuild"
+            Inputs="@(FrontEndSources)"
+            Outputs="$(WwwRootDir)\index.html"
+            Condition="'$(SkipFrontEndBuild)' != 'true'">
+      <Message Text="Building front-end via yarn..." Importance="high" />
+      <Exec Command="yarn install" WorkingDirectory="$(FrontEndDir)" />
+      <Exec Command="yarn build" WorkingDirectory="$(FrontEndDir)" />
+      <ItemGroup>
+        <FrontEndOutput Include="$(FrontEndDist)\**\*" />
+      </ItemGroup>
+      <Copy SourceFiles="@(FrontEndOutput)"
+            DestinationFiles="@(FrontEndOutput->'$(WwwRootDir)\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true" />
+    </Target>
 
 </Project>

@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack (Yarn)
+        run: corepack enable
+
+      - name: Install front-end deps
+        working-directory: front-end
+        run: yarn install --immutable
+
+      - name: Build front-end
+        working-directory: front-end
+        run: yarn build
+
+      - name: Restore .NET
+        run: dotnet restore PaddingStove.slnx
+
+      - name: Build .NET
+        env:
+          SkipFrontEndBuild: 'true'
+        run: dotnet build PaddingStove.slnx --no-restore --configuration Release
+
+      - name: Test
+        env:
+          SkipFrontEndBuild: 'true'
+        run: dotnet test HCGStudio.PaddingStove.Core.Tests/HCGStudio.PaddingStove.Core.Tests.csproj --no-build --configuration Release --verbosity normal

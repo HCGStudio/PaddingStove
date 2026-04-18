@@ -64,12 +64,8 @@ public class TrackerController(ILogger<TrackerController> logger, IGameBoardFact
         new(
             (External.GameState) status.State,
             status.PlayerDeck.Select(ToExternal).ToArray(),
-            status.OpponentDeck.Select(ToExternal).ToArray(),
-            status.Counters.Select(ToExternal).ToArray());
+            status.OpponentDeck.Select(ToExternal).ToArray());
 
     private static External.DeckContent ToExternal(DeckContent content) =>
         new(content.Id, content.Count);
-
-    private static External.BoardCounter ToExternal(BoardCounter counter) =>
-        new(counter.Type, counter.Count);
 }

@@ -1,4 +1,5 @@
 import { makeStyles } from "@griffel/react";
+import { Text } from "@mantine/core";
 
 import { ICardContent } from "../types/SseEvent";
 import { useCards } from "../utils/hooks";
@@ -6,6 +7,7 @@ import { CardTileDisplay } from "./CardTileDisplay";
 
 export interface IDeckDisplayProps {
   cards: ICardContent[];
+  title?: string;
 }
 
 const useStyles = makeStyles({
@@ -16,19 +18,29 @@ const useStyles = makeStyles({
     alignItems: "center",
     overflowY: "auto",
     margin: "10px 20px",
+    flex: "1 1 0",
     "> div": {
       width: "220px",
     },
   },
+  title: {
+    marginBottom: "6px",
+  },
 });
 
-export const DeckDisplay = ({ cards }: IDeckDisplayProps) => {
+export const DeckDisplay = ({ cards, title }: IDeckDisplayProps) => {
   const styles = useStyles();
   const { data } = useCards("latest");
   return (
     <div className={styles.wrapper}>
+      {title && (
+        <Text className={styles.title} size="lg" fw={700}>
+          {title}
+        </Text>
+      )}
       {data &&
         cards
+          .filter((c) => data[c.id])
           .map((c) => {
             return { ...c, card: data[c.id] };
           })

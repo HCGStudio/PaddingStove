@@ -17,10 +17,7 @@ internal readonly record struct KeepAliveEvent : ISseEvent;
 
 internal readonly record struct DeckContent(string Id, int Count);
 
-internal readonly record struct BoardCounter(string Type, int Count);
-
 internal sealed record BoardUpdateEvent(
     GameState State,
     IReadOnlyList<DeckContent> PlayerDeck,
-    IReadOnlyList<DeckContent> OpponentDeck,
-    IReadOnlyList<BoardCounter> Counters) : ISseEvent;
+    IReadOnlyList<DeckContent> OpponentDeck) : ISseEvent;

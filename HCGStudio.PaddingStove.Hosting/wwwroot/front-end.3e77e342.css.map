@@ -1,0 +1,1 @@
+{"mappings":"ACAA","sources":["front-end.3e77e342.css","src/global.css"],"sourcesContent":["#app, body, html {\n  height: 100%;\n}\n/*# sourceMappingURL=front-end.3e77e342.css.map */\n","#app {\n    height: 100%;\n}\n\nbody {\n    height: 100%;\n}\n\nhtml {\n    height: 100%;\n}\n"],"names":[],"version":3,"file":"front-end.3e77e342.css.map"}
