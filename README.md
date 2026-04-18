@@ -99,7 +99,7 @@ dotnet test
 
 - **`HCGStudio.PaddingStove.Core`** — domain logic. Parses Hearthstone log lines into `IBoardChange` events, mutates per-device deck state, exposes `GameBoardStatus` snapshots. No ASP.NET dependency.
 - **`HCGStudio.PaddingStove.Hosting`** — ASP.NET Core API + static-file host. Serves the built front-end out of `wwwroot/` with SPA fallback to `index.html`. Streams board updates over SSE at `/api/Tracker/{deviceId}`.
-- **`front-end`** — React 18 + Mantine + SWR, bundled with Parcel. Connects to the SSE endpoint and renders the deck tracker.
+- **`front-end`** — React 19 + Tailwind CSS + Radix UI + SWR, bundled with Parcel. Connects to the SSE endpoint and renders the deck tracker.
 - **`HCGStudio.PaddingStove.Core.Tests`** — xUnit tests for the log parser regexes.
 
 The `submodules/HearthDb` git submodule is required (`git submodule update --init --recursive`).

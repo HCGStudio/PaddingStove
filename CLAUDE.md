@@ -51,7 +51,7 @@ Two .NET 9 projects plus a Parcel/React front-end:
 
 - **HCGStudio.PaddingStove.Core** — domain logic. No ASP.NET dependency. Entry point is `AddPaddingStoveCore()` (DI extension), which warm-starts `LibIMobileDevice.GetDeviceList()` and registers `IDeviceProvider` and `IGameBoardFactory` as singletons.
 - **HCGStudio.PaddingStove.Hosting** — ASP.NET Core Web API + static file host. `Program.cs` wires controllers with source-generated JSON (`JsonContext`), serves `wwwroot` (the built front-end), and falls back to `index.html` for SPA routing.
-- **front-end** — React 18 + Mantine + SWR, bundled with Parcel. Source entry `src/index.html` → `src/index.tsx`. Built output lives in `front-end/dist`; the hosting project serves `wwwroot` (build output must land there for production).
+- **front-end** — React 19 + Tailwind CSS + Radix UI + SWR, bundled with Parcel. Source entry `src/index.html` → `src/index.tsx`. Built output lives in `front-end/dist`; the hosting project serves `wwwroot` (build output must land there for production).
 
 ### Cross-boundary type isolation
 
